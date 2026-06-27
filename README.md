@@ -49,8 +49,8 @@ https://api.trello.com/1/actions/592f11060f95a3d3d46a987a
 Clone o repositório e instale as dependências:
 
 ```bash
-git clone <URL_DO_REPOSITORIO>
-cd qa-challenge-cypress-cucumber
+git clone https://github.com/felipeozacarias/qa-challenge-automation-test.git
+cd qa-challenge-automation-test
 npm install
 ```
 
@@ -147,8 +147,8 @@ Cenário: Validar produto incluído na tela de checkout
 
 ```gherkin
 Cenário: Validar status code e campo name da estrutura list
-  Dado que possuo o endpoint de action da API do Trello
-  Quando envio uma requisição GET para consultar a action
+  Dado que possuo o endpoint da API do Trello
+  Quando envio uma requisição GET para consultar o recurso
   Então o status code da resposta deve ser 200
   E devo exibir o conteúdo do campo name da estrutura list
   E o valor do campo name da estrutura list deve ser "Professional"
