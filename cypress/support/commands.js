@@ -1,5 +1,8 @@
+const automationExerciseApiUrl = 'https://automationexercise.com/api';
+
 const buildTestUser = () => {
   const timestamp = Date.now();
+
   return {
     name: `Felipe QA ${timestamp}`,
     email: `felipe.qa.${timestamp}@example.com`,
@@ -21,48 +24,69 @@ const buildTestUser = () => {
   };
 };
 
+const normalizeResponseBody = (body) => {
+  if (typeof body !== 'string') return body;
+
+  try {
+    return JSON.parse(body);
+  } catch (error) {
+    return body;
+  }
+};
+
 Cypress.Commands.add('createAutomationExerciseUser', () => {
   const user = buildTestUser();
 
   return cy.request({
     method: 'POST',
-    url: 'https://automationexercise.com/api/createAccount',
+    url: `${automationExerciseApiUrl}/createAccount`,
     form: true,
     failOnStatusCode: false,
     body: user
   }).then((response) => {
     expect(response.status, 'HTTP status da criacao do usuario').to.eq(200);
-    expect(JSON.stringify(response.body), 'mensagem de criacao de usuario').to.include('User created');
+
+    const responseBody = normalizeResponseBody(response.body);
+    expect(JSON.stringify(responseBody), 'mensagem de criacao de usuario').to.include('User created');
 
     Cypress.env('currentUser', user);
     cy.wrap(user, { log: false }).as('currentUser');
-    return cy.wrap(user, { log: false });
+
+    return user;
   });
 });
 
 Cypress.Commands.add('deleteAutomationExerciseUser', (email, password) => {
-  if (!email || !password) return;
+  if (!email || !password) return cy.wrap(null, { log: false });
 
   return cy.request({
     method: 'DELETE',
-    url: 'https://automationexercise.com/api/deleteAccount',
+    url: `${automationExerciseApiUrl}/deleteAccount`,
     form: true,
     failOnStatusCode: false,
     body: { email, password }
+  }).then((response) => {
+    expect(response.status, 'HTTP status da exclusao do usuario').to.eq(200);
   });
 });
 
 Cypress.Commands.add('loginAutomationExercise', (user) => {
   cy.visit('/login');
-  cy.get('[data-qa="login-email"]').should('be.visible').clear().type(user.email);
-  cy.get('[data-qa="login-password"]').should('be.visible').clear().type(user.password, { log: false });
-  cy.get('[data-qa="login-button"]').should('be.visible').click();
+  cy.contains('Login to your account', { timeout: 20000 }).should('be.visible');
+
+  cy.get('form[action="/login"]').within(() => {
+    cy.get('[data-qa="login-email"], input[name="email"]').first().should('be.visible').clear().type(user.email);
+    cy.get('[data-qa="login-password"], input[name="password"]').first().should('be.visible').clear().type(user.password, { log: false });
+    cy.get('[data-qa="login-button"], button[type="submit"]').first().should('be.visible').click();
+  });
+
   cy.contains('Logged in as', { timeout: 15000 }).should('be.visible');
 });
 
 Cypress.Commands.add('goToProductsPage', () => {
   cy.visit('/products');
   cy.contains('All Products', { timeout: 20000 }).should('be.visible');
+  cy.get('.features_items .product-image-wrapper', { timeout: 20000 }).should('have.length.greaterThan', 0);
 });
 
 Cypress.Commands.add('searchProduct', (productName) => {
@@ -75,25 +99,33 @@ Cypress.Commands.add('addFirstProductToCart', () => {
   cy.get('.features_items .product-image-wrapper', { timeout: 20000 })
     .should('have.length.greaterThan', 0)
     .first()
-    .within(() => {
-      cy.get('.productinfo p').invoke('text').then((name) => {
-        cy.wrap(name.trim()).as('selectedProductName');
-      });
+    .as('selectedProductCard');
 
-      cy.get('.productinfo h2').invoke('text').then((price) => {
-        cy.wrap(price.trim()).as('selectedProductPrice');
-      });
+  cy.get('@selectedProductCard').find('.productinfo p').first().invoke('text').then((name) => {
+    cy.wrap(name.trim()).as('selectedProductName');
+  });
 
-      cy.contains('a', 'Add to cart').click({ force: true });
-    });
+  cy.get('@selectedProductCard').find('.productinfo h2').first().invoke('text').then((price) => {
+    cy.wrap(price.trim()).as('selectedProductPrice');
+  });
 
-  cy.get('#cartModal', { timeout: 15000 }).should('be.visible');
-  cy.contains('Added!').should('be.visible');
+  cy.get('@selectedProductCard')
+    .find('.productinfo a.add-to-cart, a.add-to-cart')
+    .first()
+    .scrollIntoView()
+    .click({ force: true });
+
+  cy.get('#cartModal', { timeout: 15000 }).should('be.visible').within(() => {
+    cy.contains('Added!').should('be.visible');
+    cy.contains('Your product has been added to cart.').should('be.visible');
+  });
 });
 
 Cypress.Commands.add('viewCartFromModal', () => {
-  cy.get('#cartModal').should('be.visible');
-  cy.contains('u', 'View Cart').click({ force: true });
-  cy.url().should('include', '/view_cart');
+  cy.get('#cartModal').should('be.visible').within(() => {
+    cy.contains('a', 'View Cart').should('be.visible').click({ force: true });
+  });
+
+  cy.location('pathname', { timeout: 10000 }).should('eq', '/view_cart');
   cy.get('#cart_info').should('be.visible');
 });
