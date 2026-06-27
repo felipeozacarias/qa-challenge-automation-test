@@ -52,7 +52,7 @@ Cypress.Commands.add('createAutomationExerciseUser', () => {
     Cypress.env('currentUser', user);
     cy.wrap(user, { log: false }).as('currentUser');
 
-    return user;
+    return cy.wrap(user, { log: false });
   });
 });
 
