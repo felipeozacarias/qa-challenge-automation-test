@@ -14,7 +14,7 @@ Funcionalidade: Fluxo de produtos no Automation Exercise
 
   Cenario: Validar item na tela de checkout
     Dado que estou autenticado com um usuario de teste valido no Automation Exercise
-    E acesso a pagina de produtos do Automation Exercise
+    E que acesso a pagina de produtos do Automation Exercise
     Quando adiciono o primeiro produto disponivel ao carrinho
     E acesso o carrinho de compras
     E prossigo para o checkout
