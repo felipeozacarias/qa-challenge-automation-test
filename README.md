@@ -168,6 +168,16 @@ O projeto gera:
 - screenshots em falhas em `cypress/screenshots`;
 - JSON do Cucumber em `cypress/reports/cucumber-report.json`.
 
+## Observações e Decisões Técnicas
+
+Durante a construção deste desafio, priorizei primeiro os fluxos obrigatórios solicitados no enunciado, para garantir uma entrega funcional e executável dentro do prazo. Depois, complementei a solução com evidências, checklist de atendimento e alguns ajustes de estabilidade.
+
+No desafio de automação, escolhi utilizar o Automation Exercise porque o enunciado permitia o uso de URLs similares e o site oferece fluxos públicos de login, produtos, busca, carrinho e checkout. Para reduzir dependência de credenciais fixas, optei por criar um usuário de teste dinamicamente e remover essa massa ao final da execução.
+
+Durante a validação local, identifiquei um problema de mapeamento entre um passo Gherkin e sua step definition. Corrigi o texto do cenário e executei novamente a suíte completa, finalizando com todos os testes aprovados.
+
+Com mais tempo, eu evoluiria a entrega com relatório HTML, pipeline CI/CD, execução cross-browser, Page Objects mais completos e integração com ferramentas de gestão de testes.
+
 ## Boas práticas aplicadas
 
 - Escrita dos cenários em Gherkin;
