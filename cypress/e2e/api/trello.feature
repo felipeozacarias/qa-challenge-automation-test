@@ -1,5 +1,5 @@
 # language: pt
-@api @trello
+@api @trello @smoke @critical
 Funcionalidade: Consulta de recurso na API do Trello
   Como QA
   Quero validar a resposta de um servico HTTP
