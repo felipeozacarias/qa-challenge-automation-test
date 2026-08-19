@@ -4,7 +4,7 @@ Projeto prático de QA voltado à automação de fluxos Web e API, utilizando Cy
 
 ## Objetivo
 
-Automatizar fluxos críticos de uma aplicação de e-commerce e uma validação de API:
+Automatizar fluxos críticos de uma aplicação de e-commerce e uma validação de API.
 
 ### Web
 
@@ -18,6 +18,33 @@ Automatizar fluxos críticos de uma aplicação de e-commerce e uma validação 
 - Envio de requisição `GET` para a API do Trello;
 - Validação do status code;
 - Exibição e validação do campo `data.list.name`.
+
+## Resultados da execução
+
+Última validação local consolidada:
+
+```text
+Specs: 3
+Tests: 5
+Passing: 5
+Failing: 0
+All specs passed
+```
+
+Detalhamento:
+
+```text
+api/trello.feature: 1 teste aprovado
+web/login.feature: 1 teste aprovado
+web/product_flow.feature: 3 testes aprovados
+```
+
+Evidências e validação técnica:
+
+- [Índice de evidências](docs/evidencias/INDICE.md)
+- [Resumo de evidências](docs/evidencias.md)
+- [Validação técnica](docs/VALIDACAO_TECNICA.md)
+- [Checklist de cobertura](docs/CHECKLIST_ENTREGA_FINAL.md)
 
 ## Decisão técnica sobre URL utilizada
 
@@ -43,6 +70,19 @@ https://api.trello.com/1/actions/592f11060f95a3d3d46a987a
 - Cucumber / Gherkin
 - @badeball/cypress-cucumber-preprocessor
 - @bahmutov/cypress-esbuild-preprocessor
+
+## Competências demonstradas
+
+- automação E2E Web;
+- automação e validação de API;
+- BDD com Cucumber/Gherkin;
+- criação de step definitions em JavaScript;
+- reutilização de ações com custom commands;
+- estratégia de massa de dados dinâmica;
+- cleanup de massa criada;
+- validação de status code e payload;
+- diagnóstico e correção de falhas de mapeamento Gherkin/steps;
+- documentação de execução e evidências.
 
 ## Instalação
 
