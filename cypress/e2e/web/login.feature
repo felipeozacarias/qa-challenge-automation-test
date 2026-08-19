@@ -1,5 +1,5 @@
 # language: pt
-@web @login
+@web @login @smoke @critical
 Funcionalidade: Login de usuario no Automation Exercise
   Como usuario cadastrado
   Quero acessar a aplicacao com credenciais validas
