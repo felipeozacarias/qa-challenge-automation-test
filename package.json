@@ -9,7 +9,7 @@
     "test": "cypress run",
     "test:web": "cypress run --spec \"cypress/e2e/web/**/*.feature\"",
     "test:api": "cypress run --spec \"cypress/e2e/api/**/*.feature\"",
-    "ci": "npm run cy:run"
+    "ci": "cypress run --config video=false"
   },
   "keywords": [
     "qa",
