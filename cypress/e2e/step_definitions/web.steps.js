@@ -1,4 +1,5 @@
 import { Given, When, Then, After } from '@badeball/cypress-cucumber-preprocessor';
+import { automationExercisePage } from '../../pages/automationExercise.page';
 
 After({ tags: '@web' }, () => {
   const user = Cypress.env('currentUser');
@@ -13,73 +14,57 @@ Given('que possuo um usuario de teste valido no Automation Exercise', () => {
 });
 
 Given('acesso a pagina de login do Automation Exercise', () => {
-  cy.visit('/login');
-  cy.contains('Login to your account').should('be.visible');
+  automationExercisePage.visitLogin();
 });
 
 When('informo as credenciais validas', () => {
   cy.get('@currentUser').then((user) => {
-    cy.get('[data-qa="login-email"]').should('be.visible').clear().type(user.email);
-    cy.get('[data-qa="login-password"]').should('be.visible').clear().type(user.password, { log: false });
+    automationExercisePage.fillLogin(user);
   });
 });
 
 When('aciono a opcao de login', () => {
-  cy.get('[data-qa="login-button"]').should('be.visible').click();
+  automationExercisePage.submitLogin();
 });
 
 Then('devo visualizar o usuario autenticado no sistema', () => {
-  cy.contains('Logged in as', { timeout: 15000 }).should('be.visible');
-  cy.contains('Logout').should('be.visible');
+  automationExercisePage.assertLoggedIn();
 });
 
 Given('que estou autenticado com um usuario de teste valido no Automation Exercise', () => {
   cy.createAutomationExerciseUser().then((user) => {
-    cy.loginAutomationExercise(user);
+    automationExercisePage.login(user);
   });
 });
 
 Given('que acesso a pagina de produtos do Automation Exercise', () => {
-  cy.goToProductsPage();
+  automationExercisePage.visitProducts();
 });
 
 When('realizo a busca pelo produto {string}', (productName) => {
-  cy.searchProduct(productName);
+  automationExercisePage.searchProduct(productName);
 });
 
 Then('devo visualizar produtos relacionados a busca {string}', (productName) => {
-  cy.get('.features_items .product-image-wrapper')
-    .should('have.length.greaterThan', 0);
-
-  cy.get('body').invoke('text').then((text) => {
-    expect(text.toLowerCase()).to.include(productName.toLowerCase());
-  });
+  automationExercisePage.assertSearchResults(productName);
 });
 
 When('adiciono o primeiro produto disponivel ao carrinho', () => {
-  cy.addFirstProductToCart();
+  automationExercisePage.addFirstProductToCart();
 });
 
 Then('devo visualizar a confirmacao de produto adicionado ao carrinho', () => {
-  cy.get('#cartModal').should('be.visible');
-  cy.contains('Your product has been added to cart.').should('be.visible');
+  automationExercisePage.assertProductAdded();
 });
 
 When('acesso o carrinho de compras', () => {
-  cy.viewCartFromModal();
+  automationExercisePage.viewCartFromModal();
 });
 
 When('prossigo para o checkout', () => {
-  cy.contains('a', 'Proceed To Checkout').should('be.visible').click();
-  cy.url().should('include', '/checkout');
+  automationExercisePage.proceedToCheckout();
 });
 
 Then('devo visualizar o produto incluido na tela de checkout', () => {
-  cy.get('@selectedProductName').then((productName) => {
-    cy.get('#cart_info').should('be.visible').and('contain', productName);
-  });
-
-  cy.get('@selectedProductPrice').then((productPrice) => {
-    cy.get('#cart_info').should('contain', productPrice);
-  });
+  automationExercisePage.assertSelectedProductAtCheckout();
 });
