@@ -1,6 +1,6 @@
 {
   "name": "qa-automation-cypress-cucumber",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Projeto de automação de testes Web e API com Cypress, JavaScript e Cucumber/Gherkin",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,11 @@
     "test": "cypress run",
     "test:web": "cypress run --spec \"cypress/e2e/web/**/*.feature\"",
     "test:api": "cypress run --spec \"cypress/e2e/api/**/*.feature\"",
-    "ci": "cypress run --config video=false"
+    "test:smoke": "cypress run --config video=false --env tags='@smoke'",
+    "test:regression": "cypress run --config video=false --env tags='@regression'",
+    "quality:gate": "node scripts/quality-gate.js 5",
+    "report:html": "node scripts/generate-html-report.js",
+    "ci": "cypress run --config video=false && npm run quality:gate && npm run report:html"
   },
   "keywords": [
     "qa",
@@ -19,7 +23,10 @@
     "javascript",
     "automation",
     "api-testing",
-    "e2e"
+    "e2e",
+    "quality-gate",
+    "smoke-testing",
+    "regression-testing"
   ],
   "author": "Felipe Zacarias",
   "license": "MIT",
