@@ -9,8 +9,8 @@
     "test": "cypress run",
     "test:web": "cypress run --spec \"cypress/e2e/web/**/*.feature\"",
     "test:api": "cypress run --spec \"cypress/e2e/api/**/*.feature\"",
-    "test:smoke": "cypress run --config video=false --env tags='@smoke'",
-    "test:regression": "cypress run --config video=false --env tags='@regression'",
+    "test:smoke": "cypress run --config video=false --env tags=@smoke",
+    "test:regression": "cypress run --config video=false --env tags=@regression",
     "quality:gate": "node scripts/quality-gate.js 5",
     "report:html": "node scripts/generate-html-report.js",
     "ci": "cypress run --config video=false && npm run quality:gate && npm run report:html"
