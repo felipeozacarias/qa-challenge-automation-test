@@ -1,6 +1,8 @@
-# Evidencias do Desafio 1
+# Evidências de Execução
 
-Pasta criada para registrar evidencias da execucao local do projeto de automacao.
+Esta pasta centraliza evidências da execução local do projeto de automação Web e API.
+
+## Execução validada
 
 Comando executado:
 
@@ -18,10 +20,17 @@ Failing: 0
 All specs passed
 ```
 
-Arquivo visual adicionado:
+## Evidência visual
 
 ```text
 automation-cypress-run-finished-all-specs-passed.svg
 ```
 
-Esse arquivo mostra o resumo final da execucao Cypress com as specs de API e Web aprovadas.
+O arquivo visual registra o resumo final da execução Cypress com as specs de API e Web aprovadas.
+
+## Cobertura comprovada
+
+- API Trello: 1 teste aprovado;
+- Login Web: 1 teste aprovado;
+- Fluxo de produtos: 3 testes aprovados;
+- Suíte completa: 5 testes aprovados e 0 falhas.
