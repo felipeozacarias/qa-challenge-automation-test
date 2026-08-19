@@ -1,17 +1,20 @@
 # language: pt
-@web @ecommerce
+@web @ecommerce @regression
 Funcionalidade: Fluxo de produtos no Automation Exercise
 
+  @smoke
   Cenario: Buscar produto existente
     Dado que acesso a pagina de produtos do Automation Exercise
     Quando realizo a busca pelo produto "dress"
     Entao devo visualizar produtos relacionados a busca "dress"
 
+  @regression
   Cenario: Adicionar produto ao carrinho
     Dado que acesso a pagina de produtos do Automation Exercise
     Quando adiciono o primeiro produto disponivel ao carrinho
     Entao devo visualizar a confirmacao de produto adicionado ao carrinho
 
+  @critical @smoke
   Cenario: Validar item na tela de checkout
     Dado que estou autenticado com um usuario de teste valido no Automation Exercise
     E que acesso a pagina de produtos do Automation Exercise
