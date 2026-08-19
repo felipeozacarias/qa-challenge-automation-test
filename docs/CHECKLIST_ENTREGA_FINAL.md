@@ -1,31 +1,28 @@
-# Checklist de Entrega Final - Desafio 1 Automacao
+# Checklist de Cobertura e Validação
 
-Data de consolidacao: 2026-06-28
-Projeto: qa-challenge-automation-test
+Projeto: `qa-challenge-automation-test`
 
-## Objetivo do desafio
+## Objetivo do projeto
 
-Criar um framework de automacao utilizando Cypress, JavaScript e Cucumber/Gherkin, contemplando testes Web e API, com README contendo orientacoes de instalacao e execucao.
+Demonstrar uma estrutura de automação Web e API utilizando Cypress, JavaScript e Cucumber/Gherkin, com cenários reproduzíveis, documentação de execução e evidências.
 
-## Checklist de criterios solicitados
+## Cobertura implementada
 
-| Criterio | Status | Observacao |
+| Item | Status | Observação |
 |---|---|---|
-| Cucumber para BDD | Atendido | Cenarios escritos em arquivos `.feature`. |
+| Cucumber para BDD | Atendido | Cenários escritos em arquivos `.feature`. |
 | JavaScript | Atendido | Steps e comandos implementados em JavaScript. |
-| Cypress | Atendido | Framework configurado no projeto e validado localmente. |
-| README com instalacao | Atendido | README possui clone, instalacao e comandos de execucao. |
-| Login Web | Atendido | Cenario de login valido usando usuario criado dinamicamente. |
-| Busca Web | Atendido | Cenario de busca de produto existente. |
-| Inclusao no carrinho | Atendido | Cenario adiciona produto ao carrinho e valida confirmacao. |
-| Validacao no checkout | Atendido | Cenario valida produto incluido na tela de checkout/pagamento. |
-| GET API Trello | Atendido | Requisicao GET implementada para endpoint informado. |
-| Status code API | Atendido | Validacao de status code 200. |
-| Campo `list.name` | Atendido | Validacao do valor `Professional`. |
+| Cypress | Atendido | Framework configurado e validado localmente. |
+| README com instalação | Atendido | README possui clone, instalação e comandos de execução. |
+| Login Web | Atendido | Cenário de login válido usando usuário criado dinamicamente. |
+| Busca Web | Atendido | Cenário de busca de produto existente. |
+| Inclusão no carrinho | Atendido | Cenário adiciona produto ao carrinho e valida confirmação. |
+| Validação no checkout | Atendido | Cenário valida produto incluído na tela de checkout/pagamento. |
+| GET API Trello | Atendido | Requisição GET implementada para o endpoint de referência. |
+| Status code API | Atendido | Validação de status code 200. |
+| Campo `list.name` | Atendido | Validação do valor `Professional`. |
 
-## Execucao local realizada
-
-Comandos executados localmente em Windows / PowerShell:
+## Execução local realizada
 
 ```bash
 npm install
@@ -35,44 +32,38 @@ npm run test:web
 npm run cy:run
 ```
 
-## Resultado da execucao completa
+## Resultado da execução completa
 
-Resultado final de `npm run cy:run`:
+```text
+Specs: 3
+Tests: 5
+Passing: 5
+Failing: 0
+All specs passed
+```
 
-- Specs executadas: 3
-- Testes executados: 5
-- Testes aprovados: 5
-- Falhas: 0
-- Pendentes: 0
-- Ignorados: 0
-
-Resumo:
+Detalhamento:
 
 ```text
 api/trello.feature: 1 teste aprovado
 web/login.feature: 1 teste aprovado
 web/product_flow.feature: 3 testes aprovados
-All specs passed
 ```
 
-## Evidencias geradas
+## Evidências
 
-Videos gerados localmente pelo Cypress:
+- índice de evidências em `docs/evidencias/INDICE.md`;
+- evidência visual em `docs/evidencias/automation-cypress-run-finished-all-specs-passed.svg`;
+- vídeos gerados localmente pelo Cypress em `cypress/videos`.
 
-```text
-cypress/videos/api/trello.feature.mp4
-cypress/videos/web/login.feature.mp4
-cypress/videos/web/product_flow.feature.mp4
-```
+## Decisões técnicas relevantes
 
-## Observacoes tecnicas
+- Automation Exercise foi escolhido por disponibilizar publicamente os fluxos necessários para um case de e-commerce;
+- usuário de teste criado dinamicamente para reduzir dependência de credencial fixa;
+- custom commands utilizados para reduzir duplicidade;
+- retry mantido por se tratar de ambiente público sujeito a oscilações;
+- um problema de mapeamento Gherkin/step definition foi identificado durante a validação e corrigido antes da execução final.
 
-- Foi utilizado Automation Exercise, conforme permitido pelo enunciado em caso de uso de URL similar.
-- Optei por criar usuario de teste dinamicamente para reduzir dependencia de credencial fixa.
-- O projeto utiliza comandos customizados para reduzir duplicidade e facilitar manutencao.
-- Houve ajuste em um texto de step Gherkin durante a validacao local, e apos a correcao a suite Web passou integralmente.
-- Como o ambiente Web e publico, o retry foi mantido para reduzir falso negativo por oscilacao externa.
+## Conclusão
 
-## Parecer final
-
-O Desafio 1 atende aos criterios solicitados e foi validado localmente com sucesso. A entrega esta pronta para avaliacao tecnica.
+A cobertura implementada foi validada localmente com sucesso e demonstra automação Web/API, BDD, organização de código, estratégia de massa de dados e registro de evidências.
