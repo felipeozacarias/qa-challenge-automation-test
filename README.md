@@ -1,16 +1,19 @@
 # Automação de Testes Web e API | Cypress + JavaScript + Cucumber
 
-Projeto prático de Quality Engineering voltado à automação de fluxos Web e API com **Cypress, JavaScript e Cucumber/Gherkin**. O foco é demonstrar uma estrutura executável e de fácil manutenção, com BDD, massa de dados dinâmica, Page Object, validações de API, CI/CD e evidências de execução.
+[![QA Automation CI](https://github.com/felipeozacarias/qa-challenge-automation-test/actions/workflows/qa-automation.yml/badge.svg)](https://github.com/felipeozacarias/qa-challenge-automation-test/actions/workflows/qa-automation.yml)
+
+Projeto prático de Quality Engineering voltado à automação de fluxos Web e API com **Cypress, JavaScript e Cucumber/Gherkin**. O foco é demonstrar uma estrutura executável e de fácil manutenção, com BDD, massa de dados dinâmica, Page Object, suites por criticidade, quality gate, relatório HTML, CI/CD e evidências de execução.
 
 ## Resultado consolidado
 
-Última execução local validada:
+Última execução local validada antes da inclusão do novo quality gate:
 
 ```text
 Specs: 3
 Tests: 5
 Passing: 5
 Failing: 0
+Exit code: 0
 All specs passed
 ```
 
@@ -67,9 +70,13 @@ cypress/
 └── support/
     ├── commands.js
     └── e2e.js
+
+scripts/
+├── quality-gate.js
+└── generate-html-report.js
 ```
 
-A camada `pages` concentra seletores e interações de UI. As step definitions ficam responsáveis pela tradução do comportamento Gherkin para ações de teste, enquanto os custom commands mantêm responsabilidades reutilizáveis, como lifecycle de massa de dados.
+A camada `pages` concentra seletores e interações de UI. As step definitions traduzem o comportamento Gherkin para ações de teste, enquanto os custom commands mantêm responsabilidades reutilizáveis, como lifecycle da massa de dados.
 
 ## Instalação
 
@@ -105,108 +112,108 @@ Executar somente API:
 npm run test:api
 ```
 
-Executar o mesmo comando utilizado no pipeline:
+### Suites por tags
+
+Smoke:
+
+```bash
+npm run test:smoke
+```
+
+Regressão:
+
+```bash
+npm run test:regression
+```
+
+As tags utilizadas incluem `@smoke`, `@regression` e `@critical`, além das tags funcionais já existentes como `@web`, `@api`, `@login` e `@ecommerce`.
+
+## Quality Gate
+
+O gate é executado por:
+
+```bash
+npm run quality:gate
+```
+
+Critérios atuais:
+
+- relatório Cucumber JSON deve existir;
+- pelo menos 5 cenários devem estar presentes na execução completa;
+- nenhum step pode terminar com status diferente de `passed`.
+
+Qualquer violação encerra o processo com exit code diferente de zero.
+
+## Relatório HTML
+
+Após uma execução completa, o relatório pode ser gerado com:
+
+```bash
+npm run report:html
+```
+
+Arquivo gerado:
+
+```text
+reports/automation-report.html
+```
+
+O relatório é construído a partir de:
+
+```text
+cypress/reports/cucumber-report.json
+```
+
+## Execução de CI local
 
 ```bash
 npm run ci
 ```
 
+Esse comando executa, em sequência:
+
+1. suíte Cypress completa sem gravação de vídeo;
+2. quality gate;
+3. geração do relatório HTML.
+
 ## CI/CD
 
-O workflow está versionado em:
+Workflow:
 
 ```text
 .github/workflows/qa-automation.yml
 ```
 
-O pipeline é acionado em `push`, `pull_request` para `main` e também manualmente por `workflow_dispatch`.
+Acionamentos:
+
+- `push` na `main`;
+- `pull_request` para `main`;
+- execução manual com `workflow_dispatch`.
 
 Etapas principais:
 
-1. checkout do repositório;
-2. configuração do Node.js;
-3. instalação das dependências;
-4. execução completa Cypress Web + API;
-5. publicação de vídeos, screenshots e relatórios como artefatos.
-
-Os artefatos de execução são mantidos no GitHub Actions por período limitado para facilitar diagnóstico e auditoria da execução.
+1. checkout;
+2. Node.js;
+3. instalação de dependências;
+4. execução Cypress + quality gate + relatório HTML;
+5. upload de evidências e relatórios como artifacts.
 
 ## Estratégia de massa de dados
 
-Para reduzir dependência de credenciais fixas, o projeto cria um usuário de teste via API pública do Automation Exercise antes dos cenários que exigem autenticação.
+O projeto cria um usuário de teste via API pública do Automation Exercise antes dos cenários que exigem autenticação e remove essa massa ao final dos cenários Web.
 
-Ao final dos cenários Web, o usuário criado é removido via API. Essa abordagem reduz sujeira de massa e torna os cenários mais independentes.
+## Decisões técnicas
 
-## Cenários BDD
+O **Automation Exercise** foi escolhido por disponibilizar publicamente login, produtos, busca, carrinho, checkout e APIs auxiliares para controle de massa.
 
-### Login
-
-```gherkin
-Cenario: Realizar login com credenciais validas
-  Dado que possuo um usuario de teste valido no Automation Exercise
-  E acesso a pagina de login do Automation Exercise
-  Quando informo as credenciais validas
-  E aciono a opcao de login
-  Entao devo visualizar o usuario autenticado no sistema
-```
-
-### Busca
-
-```gherkin
-Cenario: Realizar busca por produto existente
-  Dado que acesso a pagina de produtos do Automation Exercise
-  Quando realizo a busca pelo produto "dress"
-  Entao devo visualizar produtos relacionados a busca "dress"
-```
-
-### Carrinho
-
-```gherkin
-Cenario: Incluir produto no carrinho
-  Dado que acesso a pagina de produtos do Automation Exercise
-  Quando adiciono o primeiro produto disponivel ao carrinho
-  Entao devo visualizar a confirmacao de produto adicionado ao carrinho
-```
-
-### Checkout
-
-```gherkin
-Cenario: Validar produto incluido na tela de checkout
-  Dado que estou autenticado com um usuario de teste valido no Automation Exercise
-  E acesso a pagina de produtos do Automation Exercise
-  Quando adiciono o primeiro produto disponivel ao carrinho
-  E acesso o carrinho de compras
-  E prossigo para o checkout
-  Entao devo visualizar o produto incluido na tela de checkout
-```
-
-### API Trello
-
-```gherkin
-Cenario: Validar status code e campo name da estrutura list
-  Dado que possuo o endpoint da API do Trello
-  Quando envio uma requisicao GET para consultar o recurso
-  Entao o status code da resposta deve ser 200
-  E devo exibir o conteudo do campo name da estrutura list
-  E o valor do campo name da estrutura list deve ser "Professional"
-```
+A evolução do projeto introduziu **Page Object** para separar seletores e interações das step definitions, além de classificação por criticidade e um gate explícito para impedir que uma execução incompleta seja tratada como aprovada.
 
 ## Evidências e documentação
 
 - [Índice de evidências](docs/evidencias/INDICE.md)
-- [Resumo de evidências](docs/evidencias.md)
+- [Validação local do CI](docs/evidencias/ci-local-2026-08-19.md)
 - [Validação técnica](docs/VALIDACAO_TECNICA.md)
 - [Checklist de cobertura](docs/CHECKLIST_ENTREGA_FINAL.md)
-
-O Cypress também gera vídeos, screenshots em falhas e relatórios Cucumber durante a execução.
-
-## Decisões técnicas
-
-O **Automation Exercise** foi escolhido por oferecer fluxos públicos de login, produtos, busca, carrinho e checkout, além de APIs auxiliares úteis para controlar massa de dados.
-
-Durante a validação inicial, foi identificado um problema de mapeamento entre um passo Gherkin e sua step definition. O mapeamento foi corrigido e a suíte completa voltou a executar com sucesso.
-
-A refatoração posterior introduziu **Page Object** para separar seletores/interações de UI das step definitions, preservando o comportamento dos cenários já validados.
 
 ## Competências demonstradas
 
@@ -214,19 +221,20 @@ A refatoração posterior introduziu **Page Object** para separar seletores/inte
 - automação e validação de API;
 - BDD com Cucumber/Gherkin;
 - JavaScript aplicado a testes;
-- Page Object e separação de responsabilidades;
+- Page Object;
+- smoke e regressão por tags;
+- quality gates;
+- geração de relatório HTML;
 - custom commands;
-- criação e cleanup de massa dinâmica;
+- massa de dados dinâmica e cleanup;
 - validação de status code e payload;
-- tratamento de instabilidade de ambiente público;
 - CI/CD com GitHub Actions;
 - evidências e rastreabilidade de execução.
 
 ## Próximas evoluções
 
-- relatório HTML consolidado;
-- tags dedicadas para smoke e regressão;
 - execução cross-browser;
+- validação de schema de API;
 - paralelismo;
 - integração com Jira/Xray ou ferramenta equivalente;
 - expansão de cenários negativos e de contrato.
