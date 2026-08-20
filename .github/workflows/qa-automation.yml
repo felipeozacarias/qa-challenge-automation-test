@@ -11,8 +11,8 @@ permissions:
   contents: read
 
 jobs:
-  cypress-tests:
-    name: Cypress Web + API
+  quality-gate:
+    name: Full Suite + Quality Gate
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -35,11 +35,46 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cypress-evidence
+          name: cypress-quality-gate
           if-no-files-found: ignore
           retention-days: 14
           path: |
-            cypress/videos/**
             cypress/screenshots/**
             cypress/reports/**
             reports/**
+
+  cross-browser-critical:
+    name: Critical - ${{ matrix.browser }}
+    runs-on: windows-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chrome, edge, firefox]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run critical path in browser
+        shell: bash
+        run: npx cypress run --browser ${{ matrix.browser }} --config video=false --env tags=@critical
+
+      - name: Upload cross-browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: critical-${{ matrix.browser }}-evidence
+          if-no-files-found: ignore
+          retention-days: 14
+          path: |
+            cypress/screenshots/**
+            cypress/reports/**
