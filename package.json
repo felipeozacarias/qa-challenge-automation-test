@@ -18,7 +18,7 @@
     "browsers:info": "cypress info",
     "quality:gate": "node scripts/quality-gate.js 5",
     "report:html": "node scripts/generate-html-report.js",
-    "ci": "cypress run --config video=false && npm run quality:gate && npm run report:html"
+    "ci": "cypress run --browser chrome --config video=false && npm run quality:gate && npm run report:html"
   },
   "keywords": [
     "qa",
