@@ -50,10 +50,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Firefox is temporarily excluded from the blocking matrix while the
-        # Cypress/Cucumber stack is upgraded to a version compatible with
-        # current Firefox releases (Firefox >=141 requires Cypress >=14.1).
-        browser: [chrome, edge]
+        browser: [chrome, edge, firefox]
 
     steps:
       - name: Checkout repository
