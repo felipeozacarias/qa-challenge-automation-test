@@ -2,27 +2,29 @@
 
 [![QA Automation CI](https://github.com/felipeozacarias/qa-challenge-automation-test/actions/workflows/qa-automation.yml/badge.svg)](https://github.com/felipeozacarias/qa-challenge-automation-test/actions/workflows/qa-automation.yml)
 
-Projeto prático de Quality Engineering voltado à automação de fluxos Web e API com **Cypress, JavaScript e Cucumber/Gherkin**. O foco é demonstrar uma estrutura executável e de fácil manutenção, com BDD, massa de dados dinâmica, Page Object, suites por criticidade, quality gate, relatório HTML, CI/CD e evidências de execução.
+Projeto prático de Quality Engineering voltado à automação de fluxos Web e API com **Cypress, JavaScript e Cucumber/Gherkin**. O foco é demonstrar uma estrutura executável e de fácil manutenção, com BDD, massa de dados dinâmica, Page Object, suites por criticidade, quality gate, relatório HTML, CI/CD, execução cross-browser e evidências de execução.
 
 ## Resultado consolidado
 
-Última execução local validada antes da inclusão do novo quality gate:
+Última execução local validada na branch de upgrade:
 
 ```text
+Cypress: 14.5.4
+Browser CI: Chrome 151
 Specs: 3
 Tests: 5
 Passing: 5
 Failing: 0
 Exit code: 0
-All specs passed
+All specs passed!
 ```
 
-Detalhamento:
+Cross-browser do caminho crítico:
 
 ```text
-api/trello.feature: 1 teste aprovado
-web/login.feature: 1 teste aprovado
-web/product_flow.feature: 3 testes aprovados
+Chrome 151: 3 passing / 0 failing
+Edge 151: 3 passing / 0 failing
+Firefox 154: 3 passing / 0 failing
 ```
 
 ## Escopo automatizado
@@ -43,10 +45,10 @@ web/product_flow.feature: 3 testes aprovados
 ## Tecnologias
 
 - Node.js 22
-- Cypress 13
+- Cypress 14.5.4
 - JavaScript
 - Cucumber / Gherkin
-- `@badeball/cypress-cucumber-preprocessor`
+- `@badeball/cypress-cucumber-preprocessor` 22.2.0
 - `@bahmutov/cypress-esbuild-preprocessor`
 - GitHub Actions
 
@@ -75,8 +77,6 @@ scripts/
 ├── quality-gate.js
 └── generate-html-report.js
 ```
-
-A camada `pages` concentra seletores e interações de UI. As step definitions traduzem o comportamento Gherkin para ações de teste, enquanto os custom commands mantêm responsabilidades reutilizáveis, como lifecycle da massa de dados.
 
 ## Instalação
 
@@ -114,23 +114,27 @@ npm run test:api
 
 ### Suites por tags
 
-Smoke:
-
 ```bash
 npm run test:smoke
+npm run test:regression
+npm run test:critical
 ```
 
-Regressão:
+As tags utilizadas incluem `@smoke`, `@regression` e `@critical`, além das tags funcionais como `@web`, `@api`, `@login` e `@ecommerce`.
+
+## Cross-browser
+
+O caminho crítico pode ser executado individualmente em navegadores reais:
 
 ```bash
-npm run test:regression
+npm run test:critical:chrome
+npm run test:critical:edge
+npm run test:critical:firefox
 ```
 
-As tags utilizadas incluem `@smoke`, `@regression` e `@critical`, além das tags funcionais já existentes como `@web`, `@api`, `@login` e `@ecommerce`.
+A estratégia adotada executa a suíte completa no navegador principal e o caminho crítico nos navegadores adicionais, reduzindo custo sem abrir mão de cobertura de compatibilidade.
 
 ## Quality Gate
-
-O gate é executado por:
 
 ```bash
 npm run quality:gate
@@ -146,8 +150,6 @@ Qualquer violação encerra o processo com exit code diferente de zero.
 
 ## Relatório HTML
 
-Após uma execução completa, o relatório pode ser gerado com:
-
 ```bash
 npm run report:html
 ```
@@ -158,12 +160,6 @@ Arquivo gerado:
 reports/automation-report.html
 ```
 
-O relatório é construído a partir de:
-
-```text
-cypress/reports/cucumber-report.json
-```
-
 ## Execução de CI local
 
 ```bash
@@ -172,7 +168,7 @@ npm run ci
 
 Esse comando executa, em sequência:
 
-1. suíte Cypress completa sem gravação de vídeo;
+1. suíte Cypress completa em Chrome, sem gravação de vídeo;
 2. quality gate;
 3. geração do relatório HTML.
 
@@ -184,19 +180,23 @@ Workflow:
 .github/workflows/qa-automation.yml
 ```
 
+O pipeline contém dois níveis:
+
+```text
+Full Suite + Quality Gate
+└── Chrome
+
+Critical Cross-Browser
+├── Chrome
+├── Edge
+└── Firefox
+```
+
 Acionamentos:
 
 - `push` na `main`;
 - `pull_request` para `main`;
 - execução manual com `workflow_dispatch`.
-
-Etapas principais:
-
-1. checkout;
-2. Node.js;
-3. instalação de dependências;
-4. execução Cypress + quality gate + relatório HTML;
-5. upload de evidências e relatórios como artifacts.
 
 ## Estratégia de massa de dados
 
@@ -206,12 +206,14 @@ O projeto cria um usuário de teste via API pública do Automation Exercise ante
 
 O **Automation Exercise** foi escolhido por disponibilizar publicamente login, produtos, busca, carrinho, checkout e APIs auxiliares para controle de massa.
 
-A evolução do projeto introduziu **Page Object** para separar seletores e interações das step definitions, além de classificação por criticidade e um gate explícito para impedir que uma execução incompleta seja tratada como aprovada.
+A evolução do projeto introduziu **Page Object**, classificação por criticidade, quality gate, relatório HTML e execução cross-browser. A atualização para Cypress 14.5.4 foi realizada de forma controlada para garantir compatibilidade com versões atuais do Firefox sem perder a estabilidade já validada em Chrome e Edge.
 
 ## Evidências e documentação
 
 - [Índice de evidências](docs/evidencias/INDICE.md)
 - [Validação local do CI](docs/evidencias/ci-local-2026-08-19.md)
+- [Suites, quality gate e HTML](docs/evidencias/quality-gate-html-2026-08-19.md)
+- [Cross-browser com Cypress 14](docs/evidencias/cross-browser-cypress14-2026-08-21.md)
 - [Validação técnica](docs/VALIDACAO_TECNICA.md)
 - [Checklist de cobertura](docs/CHECKLIST_ENTREGA_FINAL.md)
 
@@ -222,7 +224,8 @@ A evolução do projeto introduziu **Page Object** para separar seletores e inte
 - BDD com Cucumber/Gherkin;
 - JavaScript aplicado a testes;
 - Page Object;
-- smoke e regressão por tags;
+- smoke, regressão e caminho crítico por tags;
+- cross-browser testing;
 - quality gates;
 - geração de relatório HTML;
 - custom commands;
@@ -233,8 +236,8 @@ A evolução do projeto introduziu **Page Object** para separar seletores e inte
 
 ## Próximas evoluções
 
-- execução cross-browser;
 - validação de schema de API;
+- quality gate por criticidade;
 - paralelismo;
 - integração com Jira/Xray ou ferramenta equivalente;
 - expansão de cenários negativos e de contrato.
