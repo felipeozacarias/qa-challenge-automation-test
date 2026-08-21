@@ -1,6 +1,6 @@
 {
   "name": "qa-automation-cypress-cucumber",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Projeto de automação de testes Web e API com Cypress, JavaScript e Cucumber/Gherkin",
   "main": "index.js",
   "scripts": {
@@ -17,8 +17,12 @@
     "test:critical:firefox": "cypress run --browser firefox --config video=false --env tags=@critical",
     "browsers:info": "cypress info",
     "quality:gate": "node scripts/quality-gate.js 5",
+    "quality:gate:critical": "node scripts/critical-quality-gate.js 3",
     "report:html": "node scripts/generate-html-report.js",
-    "ci": "cypress run --browser chrome --config video=false && npm run quality:gate && npm run report:html"
+    "ci": "cypress run --browser chrome --config video=false && npm run quality:gate && npm run report:html",
+    "ci:critical:chrome": "npm run test:critical:chrome && npm run quality:gate:critical",
+    "ci:critical:edge": "npm run test:critical:edge && npm run quality:gate:critical",
+    "ci:critical:firefox": "npm run test:critical:firefox && npm run quality:gate:critical"
   },
   "keywords": [
     "qa",
@@ -30,6 +34,8 @@
     "api-testing",
     "e2e",
     "quality-gate",
+    "json-schema",
+    "contract-testing",
     "smoke-testing",
     "regression-testing",
     "cross-browser-testing"
@@ -39,6 +45,7 @@
   "devDependencies": {
     "@badeball/cypress-cucumber-preprocessor": "22.2.0",
     "@bahmutov/cypress-esbuild-preprocessor": "^2.2.0",
+    "ajv": "8.17.1",
     "cypress": "14.5.4"
   },
   "cypress-cucumber-preprocessor": {
