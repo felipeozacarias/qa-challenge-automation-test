@@ -45,7 +45,7 @@ jobs:
             reports/**
 
   cross-browser-critical:
-    name: Critical - ${{ matrix.browser }}
+    name: Critical Gate - ${{ matrix.browser }}
     runs-on: windows-latest
     timeout-minutes: 20
     strategy:
@@ -66,9 +66,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run critical path in browser
+      - name: Run critical path with critical quality gate
         shell: bash
-        run: npx cypress run --browser ${{ matrix.browser }} --config video=false --env tags=@critical
+        run: npm run "ci:critical:${{ matrix.browser }}"
 
       - name: Upload cross-browser evidence
         if: always()
