@@ -2,11 +2,11 @@
 
 [![QA Automation CI](https://github.com/felipeozacarias/qa-challenge-automation-test/actions/workflows/qa-automation.yml/badge.svg)](https://github.com/felipeozacarias/qa-challenge-automation-test/actions/workflows/qa-automation.yml)
 
-Projeto prático de Quality Engineering voltado à automação de fluxos Web e API com **Cypress, JavaScript e Cucumber/Gherkin**. O foco é demonstrar uma estrutura executável e de fácil manutenção, com BDD, massa de dados dinâmica, Page Object, suites por criticidade, quality gate, relatório HTML, CI/CD, execução cross-browser e evidências de execução.
+Projeto prático de Quality Engineering voltado à automação de fluxos Web e API com **Cypress, JavaScript e Cucumber/Gherkin**. O foco é demonstrar uma estrutura executável e de fácil manutenção, com BDD, massa de dados dinâmica, Page Object, suites por criticidade, quality gates, validação de contrato de API, relatório HTML, CI/CD, execução cross-browser e evidências de execução.
 
 ## Resultado consolidado
 
-Última execução local validada na branch de upgrade:
+Última execução local validada:
 
 ```text
 Cypress: 14.5.4
@@ -22,9 +22,9 @@ All specs passed!
 Cross-browser do caminho crítico:
 
 ```text
-Chrome 151: 3 passing / 0 failing
-Edge 151: 3 passing / 0 failing
-Firefox 154: 3 passing / 0 failing
+Chrome 151: 3 critical passing / 0 failing
+Edge 151: 3 critical passing / 0 failing
+Firefox: validado via GitHub Actions
 ```
 
 ## Escopo automatizado
@@ -40,7 +40,10 @@ Firefox 154: 3 passing / 0 failing
 
 - requisição `GET` para o recurso de actions;
 - validação do status code `200`;
+- validação de JSON Schema do contrato utilizado pelo teste;
 - validação do campo `data.list.name` com valor esperado `Professional`.
+
+O schema valida apenas a estrutura necessária ao contrato do cenário (`data.list.name`), evitando acoplamento desnecessário a campos da API que não fazem parte do requisito.
 
 ## Tecnologias
 
@@ -48,6 +51,7 @@ Firefox 154: 3 passing / 0 failing
 - Cypress 14.5.4
 - JavaScript
 - Cucumber / Gherkin
+- Ajv 8.17.1
 - `@badeball/cypress-cucumber-preprocessor` 22.2.0
 - `@bahmutov/cypress-esbuild-preprocessor`
 - GitHub Actions
@@ -65,6 +69,8 @@ cypress/
 │   └── step_definitions/
 │       ├── api.steps.js
 │       └── web.steps.js
+├── schemas/
+│   └── trello-action.schema.js
 ├── fixtures/
 │   └── users.json
 ├── pages/
@@ -75,6 +81,7 @@ cypress/
 
 scripts/
 ├── quality-gate.js
+├── critical-quality-gate.js
 └── generate-html-report.js
 ```
 
@@ -83,7 +90,7 @@ scripts/
 ```bash
 git clone https://github.com/felipeozacarias/qa-challenge-automation-test.git
 cd qa-challenge-automation-test
-npm install
+npm ci
 ```
 
 ## Execução
@@ -124,27 +131,41 @@ As tags utilizadas incluem `@smoke`, `@regression` e `@critical`, além das tags
 
 ## Cross-browser
 
-O caminho crítico pode ser executado individualmente em navegadores reais:
+O caminho crítico pode ser executado com gate explícito por navegador:
 
 ```bash
-npm run test:critical:chrome
-npm run test:critical:edge
-npm run test:critical:firefox
+npm run ci:critical:chrome
+npm run ci:critical:edge
+npm run ci:critical:firefox
 ```
 
-A estratégia adotada executa a suíte completa no navegador principal e o caminho crítico nos navegadores adicionais, reduzindo custo sem abrir mão de cobertura de compatibilidade.
+A estratégia executa a suíte completa no navegador principal e o caminho crítico nos navegadores adicionais, reduzindo custo sem abrir mão de cobertura de compatibilidade.
 
-## Quality Gate
+## Quality Gates
+
+### Gate da suíte completa
 
 ```bash
 npm run quality:gate
 ```
 
-Critérios atuais:
+Critérios:
 
 - relatório Cucumber JSON deve existir;
 - pelo menos 5 cenários devem estar presentes na execução completa;
 - nenhum step pode terminar com status diferente de `passed`.
+
+### Gate do caminho crítico
+
+```bash
+npm run quality:gate:critical
+```
+
+Critérios:
+
+- pelo menos 3 cenários com tag `@critical` devem estar presentes;
+- os 3 cenários críticos devem ter sido executados;
+- nenhum step crítico pode terminar com status diferente de `passed`.
 
 Qualquer violação encerra o processo com exit code diferente de zero.
 
@@ -169,7 +190,7 @@ npm run ci
 Esse comando executa, em sequência:
 
 1. suíte Cypress completa em Chrome, sem gravação de vídeo;
-2. quality gate;
+2. quality gate global;
 3. geração do relatório HTML.
 
 ## CI/CD
@@ -184,12 +205,12 @@ O pipeline contém dois níveis:
 
 ```text
 Full Suite + Quality Gate
-└── Chrome
+└── Chrome → 5 cenários + gate global
 
 Critical Cross-Browser
-├── Chrome
-├── Edge
-└── Firefox
+├── Chrome  → 3 críticos + critical gate
+├── Edge    → 3 críticos + critical gate
+└── Firefox → 3 críticos + critical gate
 ```
 
 Acionamentos:
@@ -206,7 +227,7 @@ O projeto cria um usuário de teste via API pública do Automation Exercise ante
 
 O **Automation Exercise** foi escolhido por disponibilizar publicamente login, produtos, busca, carrinho, checkout e APIs auxiliares para controle de massa.
 
-A evolução do projeto introduziu **Page Object**, classificação por criticidade, quality gate, relatório HTML e execução cross-browser. A atualização para Cypress 14.5.4 foi realizada de forma controlada para garantir compatibilidade com versões atuais do Firefox sem perder a estabilidade já validada em Chrome e Edge.
+A evolução do projeto introduziu **Page Object**, classificação por criticidade, quality gates, relatório HTML, execução cross-browser e validação de contrato de API com JSON Schema. O schema da API foi deliberadamente mantido focado na estrutura que o cenário realmente consome, reduzindo falsos positivos por mudanças irrelevantes no payload público.
 
 ## Evidências e documentação
 
@@ -221,12 +242,13 @@ A evolução do projeto introduziu **Page Object**, classificação por criticid
 
 - automação E2E Web;
 - automação e validação de API;
+- validação de contrato com JSON Schema;
 - BDD com Cucumber/Gherkin;
 - JavaScript aplicado a testes;
 - Page Object;
 - smoke, regressão e caminho crítico por tags;
 - cross-browser testing;
-- quality gates;
+- quality gates global e por criticidade;
 - geração de relatório HTML;
 - custom commands;
 - massa de dados dinâmica e cleanup;
@@ -236,8 +258,7 @@ A evolução do projeto introduziu **Page Object**, classificação por criticid
 
 ## Próximas evoluções
 
-- validação de schema de API;
-- quality gate por criticidade;
+- cenários negativos e de contrato adicionais;
 - paralelismo;
 - integração com Jira/Xray ou ferramenta equivalente;
-- expansão de cenários negativos e de contrato.
+- observabilidade de flakiness e tendências de execução.
