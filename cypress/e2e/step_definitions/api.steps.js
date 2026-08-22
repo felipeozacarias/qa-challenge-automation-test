@@ -1,4 +1,9 @@
+import Ajv from 'ajv';
 import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
+import trelloActionSchema from '../../schemas/trello-action.schema';
+
+const ajv = new Ajv({ allErrors: true, strict: false });
+const validateTrelloAction = ajv.compile(trelloActionSchema);
 
 Given('que possuo o endpoint da API do Trello', () => {
   const trelloActionUrl = Cypress.env('trelloActionUrl');
@@ -11,13 +16,24 @@ When('envio uma requisicao GET para consultar o recurso', () => {
     cy.request({
       method: 'GET',
       url,
-      failOnStatusCode: false
+      failOnStatusCode: false,
     }).as('trelloResponse');
   });
 });
 
 Then('o status code da resposta deve ser 200', () => {
   cy.get('@trelloResponse').its('status').should('eq', 200);
+});
+
+Then('a resposta deve respeitar o schema esperado da action do Trello', () => {
+  cy.get('@trelloResponse').then((response) => {
+    const isValid = validateTrelloAction(response.body);
+    const validationErrors = validateTrelloAction.errors
+      ? JSON.stringify(validateTrelloAction.errors, null, 2)
+      : 'nenhum';
+
+    expect(isValid, `erros de schema: ${validationErrors}`).to.eq(true);
+  });
 });
 
 Then('devo exibir o conteudo do campo name da estrutura list', () => {
