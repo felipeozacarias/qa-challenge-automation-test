@@ -5,10 +5,26 @@ import trelloActionSchema from '../../schemas/trello-action.schema';
 const ajv = new Ajv({ allErrors: true, strict: false });
 const validateTrelloAction = ajv.compile(trelloActionSchema);
 
+const buildActionUrl = (actionId) => {
+  const trelloActionUrl = Cypress.env('trelloActionUrl');
+  expect(trelloActionUrl, 'endpoint da API Trello').to.be.a('string').and.not.be.empty;
+
+  const baseUrl = trelloActionUrl.replace(/\/[^/]+$/, '');
+  return `${baseUrl}/${actionId}`;
+};
+
 Given('que possuo o endpoint da API do Trello', () => {
   const trelloActionUrl = Cypress.env('trelloActionUrl');
   expect(trelloActionUrl, 'endpoint da API Trello').to.be.a('string').and.not.be.empty;
   cy.wrap(trelloActionUrl).as('trelloActionUrl');
+});
+
+Given('que possuo um identificador de action com formato valido mas inexistente', () => {
+  cy.wrap(buildActionUrl('000000000000000000000000')).as('trelloActionUrl');
+});
+
+Given('que possuo um identificador de action malformado', () => {
+  cy.wrap(buildActionUrl('invalid-action-id')).as('trelloActionUrl');
 });
 
 When('envio uma requisicao GET para consultar o recurso', () => {
@@ -21,8 +37,8 @@ When('envio uma requisicao GET para consultar o recurso', () => {
   });
 });
 
-Then('o status code da resposta deve ser 200', () => {
-  cy.get('@trelloResponse').its('status').should('eq', 200);
+Then('o status code da resposta deve ser {int}', (expectedStatus) => {
+  cy.get('@trelloResponse').its('status').should('eq', expectedStatus);
 });
 
 Then('a resposta deve respeitar o schema esperado da action do Trello', () => {
@@ -47,5 +63,18 @@ Then('devo exibir o conteudo do campo name da estrutura list', () => {
 Then('o valor do campo name da estrutura list deve ser {string}', (expectedListName) => {
   cy.get('@trelloResponse').then((response) => {
     expect(response.body.data.list.name).to.eq(expectedListName);
+  });
+});
+
+Then('o content type da resposta deve conter {string}', (expectedContentType) => {
+  cy.get('@trelloResponse').then((response) => {
+    expect(response.headers['content-type']).to.include(expectedContentType);
+  });
+});
+
+Then('o corpo da resposta deve conter a mensagem {string}', (expectedMessage) => {
+  cy.get('@trelloResponse').then((response) => {
+    expect(response.body).to.be.a('string');
+    expect(response.body).to.include(expectedMessage);
   });
 });
