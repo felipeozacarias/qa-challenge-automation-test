@@ -23,12 +23,24 @@ When('informo as credenciais validas', () => {
   });
 });
 
+When('informo credenciais invalidas', () => {
+  automationExercisePage.fillInvalidLogin();
+});
+
 When('aciono a opcao de login', () => {
   automationExercisePage.submitLogin();
 });
 
 Then('devo visualizar o usuario autenticado no sistema', () => {
   automationExercisePage.assertLoggedIn();
+});
+
+Then('devo visualizar uma mensagem de credenciais invalidas', () => {
+  automationExercisePage.assertInvalidLoginMessage();
+});
+
+Then('devo permanecer nao autenticado', () => {
+  automationExercisePage.assertNotLoggedIn();
 });
 
 Given('que estou autenticado com um usuario de teste valido no Automation Exercise', () => {
