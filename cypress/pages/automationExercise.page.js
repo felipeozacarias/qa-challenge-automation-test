@@ -23,6 +23,13 @@ class AutomationExercisePage {
       .type(user.password, { log: false });
   }
 
+  fillInvalidLogin() {
+    this.fillLogin({
+      email: 'qa.invalid.user@example.com',
+      password: 'InvalidPassword123!'
+    });
+  }
+
   submitLogin() {
     cy.get(selectors.loginButton).should('be.visible').click();
   }
@@ -30,6 +37,16 @@ class AutomationExercisePage {
   assertLoggedIn() {
     cy.contains('Logged in as', { timeout: 15000 }).should('be.visible');
     cy.contains('Logout').should('be.visible');
+  }
+
+  assertInvalidLoginMessage() {
+    cy.contains('Your email or password is incorrect!', { timeout: 15000 }).should('be.visible');
+  }
+
+  assertNotLoggedIn() {
+    cy.contains('Logged in as').should('not.exist');
+    cy.contains('Logout').should('not.exist');
+    cy.location('pathname').should('eq', '/login');
   }
 
   login(user) {
