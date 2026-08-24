@@ -13,7 +13,7 @@ Given('que possuo um usuario de teste valido no Automation Exercise', () => {
   cy.createAutomationExerciseUser();
 });
 
-Given('acesso a pagina de login do Automation Exercise', () => {
+Given(/^(?:que )?acesso a pagina de login do Automation Exercise$/, () => {
   automationExercisePage.visitLogin();
 });
 
